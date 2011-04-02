@@ -7,7 +7,6 @@
 //
 
 #import "OARequestHeader.h"
-
 #include <CommonCrypto/CommonDigest.h>
 
 
@@ -16,6 +15,47 @@
 - (void)_generateNonce;
 - (NSString *)_signatureBaseString;
 @end
+
+@implementation OAToken (OAToken_Parameters)
+
+- (NSDictionary *)parameters
+{
+	NSMutableDictionary *params = [[[NSMutableDictionary alloc] init] autorelease];
+    
+	if (key) {
+		[params setObject:key forKey:@"oauth_token"];
+	}
+	return params;
+}
+
+@end
+
+@implementation NSString (OAURLEncodingAdditions1)
+
+- (NSString *)encodedURLString 
+{
+    NSString *result = (NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
+                                                                           (CFStringRef)self,
+                                                                           NULL,                   // characters to leave unescaped (NULL = all escaped sequences are replaced)
+                                                                           CFSTR("?=&+"),          // legal URL characters to be escaped (NULL = all legal characters are replaced)
+                                                                           kCFStringEncodingUTF8); // encoding
+    [result autorelease];
+    return result;
+}
+
+- (NSString *)encodedURLParameterString 
+{
+    NSString *result = (NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
+                                                                           (CFStringRef)self,
+                                                                           NULL,
+                                                                           CFSTR(":/=,!$&'()*+;[]@#?"),
+                                                                           kCFStringEncodingUTF8);
+    [result autorelease];
+    return result;
+}
+
+@end
+
 
 @implementation OARequestHeader
 
@@ -105,7 +145,7 @@
   [parameterPairs addObject:[[[[OARequestParameter alloc] initWithName:@"oauth_version" value:@"1.0"] autorelease] URLEncodedNameValuePair]];
 	
 	for (NSString *param in tokenParameters) {
-		[parameterPairs addObject:[[OARequestParameter requestParameter:param value:[tokenParameters objectForKey:param]] URLEncodedNameValuePair]];
+		[parameterPairs addObject:[[OARequestParameter requestParameterWithName:param value:[tokenParameters objectForKey:param]] URLEncodedNameValuePair]];
 	}
   
   NSArray *sortedPairs = [parameterPairs sortedArrayUsingSelector:@selector(compare:)];
