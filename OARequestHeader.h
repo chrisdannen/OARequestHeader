@@ -16,22 +16,26 @@
 
 @interface OARequestHeader : NSObject {
 @protected
-  OAConsumer *consumer;
-  OAToken *token;
-  NSString *provider;
-  NSString *method;
-  NSString *realm;
-  NSString *signature;
-  id <OASignatureProviding, NSObject> signatureProvider;
-  NSString *nonce;
-  NSString *timestamp;
+    OAConsumer *consumer;
+    OAToken *token;
+    NSString *provider;
+    NSString *method;
+    NSString *realm;
+    NSString *signature;
+    id <OASignatureProviding, NSObject> signatureProvider;
+    NSString *nonce;
+    NSString *timestamp;
+	NSTimeInterval timestampOffset;
+    NSArray *requestParameters;
 }
 
 - (id)initWithProvider:(NSString *)theProvider
                 method:(NSString *)theMethod
               consumer:(OAConsumer *)theConsumer
                  token:(OAToken *)theToken
-                 realm:(NSString *)theRealm;
+                 realm:(NSString *)theRealm
+	   timestampOffset:(NSTimeInterval)theTimestampOffset
+     requestParameters:(NSArray*)theRequestParameters;
 
 - (NSString *)generateRequestHeaders;
 
