@@ -34,7 +34,7 @@
               consumer:(OAConsumer *)theConsumer
                  token:(OAToken *)theToken
                  realm:(NSString *)theRealm
-	   timestampOffset:(NSTimeInterval)theTimestampOffset
+       timestampOffset:(NSTimeInterval)theTimestampOffset
      requestParameters:(NSArray*)theRequestParameters;
 
 - (NSString *)generateRequestHeaders;
