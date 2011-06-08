@@ -27,29 +27,43 @@
        timestampOffset:(NSTimeInterval)theTimestampOffset
      requestParameters:(NSArray*)theRequestParameters
 {
-    self  = [super init];
+    self = [super init];
 
     if (self != nil) {
-      provider = theProvider;
+      provider = [theProvider copy];
 
-      if (theMethod == nil) {
-          method = theMethod;
+      if (theMethod != nil) {
+          method = [theMethod copy];
       }
       else {
           method = @"GET";
       }
 
-      consumer = theConsumer;
-      token = theToken;
+      consumer = [theConsumer retain];
+      token = [theToken copy];
       realm = [theRealm copy];
       signatureProvider = [[OAHMAC_SHA1SignatureProvider alloc] init]; // HMAC-SHA1
       timestampOffset = theTimestampOffset;
-      requestParameters = theRequestParameters;
+      requestParameters = [theRequestParameters copy];
     }
 
     return self;
 }
 
+- (void)dealloc
+{
+	[consumer release], consumer = nil;
+	[token release], token = nil;
+	[provider release], provider = nil;
+	[method release], method = nil;
+	[realm release], realm = nil;
+	[signature release], signature = nil;
+	[signatureProvider release], signatureProvider = nil;
+	[nonce release], nonce = nil;
+	[timestamp release], timestamp = nil;
+	[requestParameters release], requestParameters = nil;
+	[super dealloc];
+}
 
 - (NSString *)generateRequestHeaders {
     [self _generateTimestamp];
@@ -72,7 +86,7 @@
     [chunks addObject:[NSString stringWithFormat:@"oauth_signature=\"%@\"", [signature encodedURLParameterString]]];
     [chunks addObject:[NSString stringWithFormat:@"oauth_timestamp=\"%@\"", timestamp]];
     [chunks addObject:[NSString stringWithFormat:@"oauth_nonce=\"%@\"", nonce]];
-    [chunks    addObject:@"oauth_version=\"1.0\""];
+    [chunks addObject:@"oauth_version=\"1.0\""];
 
     NSString *oauthHeader = [NSString stringWithFormat:@"OAuth %@", [chunks componentsJoinedByString:@", "]];
 

@@ -25,7 +25,7 @@
     id <OASignatureProviding, NSObject> signatureProvider;
     NSString *nonce;
     NSString *timestamp;
-	NSTimeInterval timestampOffset;
+    NSTimeInterval timestampOffset;
     NSArray *requestParameters;
 }
 
