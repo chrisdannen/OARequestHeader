@@ -69,9 +69,10 @@
     [self _generateTimestamp];
     [self _generateNonce];
 
-    signature = [signatureProvider signClearText:[self _signatureBaseString]
+		NSString * tmpSignature = [signatureProvider signClearText:[self _signatureBaseString]
                                       withSecret:[NSString stringWithFormat:@"%@&%@", [consumer.secret encodedURLString], token.secret ? [token.secret encodedURLString] : @""]];
-
+    [signature release], signature = nil;
+    signature = [tmpSignature copy];
     NSMutableArray *chunks = [[NSMutableArray alloc] init];
 
     [chunks addObject:[NSString stringWithFormat:@"realm=\"%@\"", [realm encodedURLParameterString]]];
