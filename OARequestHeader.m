@@ -98,6 +98,7 @@
 
 - (void)_generateTimestamp {
     NSTimeInterval stamp = [[NSDate date] timeIntervalSince1970] + timestampOffset;
+		[timestamp release], timestamp = nil;
     timestamp = [NSString stringWithFormat:@"%d", (int)stamp];
 }
 
@@ -110,7 +111,7 @@
     for (int i = 0; i < CC_SHA1_DIGEST_LENGTH; i++) {
         [out appendFormat:@"%02X", result[i]];
     }
-
+    [nonce release], nonce = nil;
     nonce = [out lowercaseString];
 }
 
