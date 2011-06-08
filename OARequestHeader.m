@@ -40,7 +40,7 @@
       }
 
       consumer = [theConsumer retain];
-      token = [theToken copy];
+      token = [theToken retain];
       realm = [theRealm copy];
       signatureProvider = [[OAHMAC_SHA1SignatureProvider alloc] init]; // HMAC-SHA1
       timestampOffset = theTimestampOffset;
@@ -72,7 +72,7 @@
     signature = [signatureProvider signClearText:[self _signatureBaseString]
                                       withSecret:[NSString stringWithFormat:@"%@&%@", [consumer.secret encodedURLString], token.secret ? [token.secret encodedURLString] : @""]];
 
-    NSMutableArray *chunks = [[[NSMutableArray alloc] init] autorelease];
+    NSMutableArray *chunks = [[NSMutableArray alloc] init];
 
     [chunks addObject:[NSString stringWithFormat:@"realm=\"%@\"", [realm encodedURLParameterString]]];
     [chunks addObject:[NSString stringWithFormat:@"oauth_consumer_key=\"%@\"", [consumer.key encodedURLParameterString]]];
@@ -89,8 +89,9 @@
     [chunks addObject:@"oauth_version=\"1.0\""];
 
     NSString *oauthHeader = [NSString stringWithFormat:@"OAuth %@", [chunks componentsJoinedByString:@", "]];
+		[chunks release], chunks = nil;
 
-    NSLog(@"oauthHeader: %@", oauthHeader);
+    // NSLog(@"oauthHeader: %@", oauthHeader);
 
     return oauthHeader;
 }
@@ -99,7 +100,7 @@
 - (void)_generateTimestamp {
     NSTimeInterval stamp = [[NSDate date] timeIntervalSince1970] + timestampOffset;
 		[timestamp release], timestamp = nil;
-    timestamp = [NSString stringWithFormat:@"%d", (int)stamp];
+    timestamp = [[NSString alloc] initWithFormat:@"%d", (int)stamp];
 }
 
 
@@ -111,8 +112,9 @@
     for (int i = 0; i < CC_SHA1_DIGEST_LENGTH; i++) {
         [out appendFormat:@"%02X", result[i]];
     }
+
     [nonce release], nonce = nil;
-    nonce = [out lowercaseString];
+    nonce = [[out lowercaseString] copy];
 }
 
 
